@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -28,41 +27,19 @@ public class ListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list);
         Log.d("what","ListActivity created");
 
-        DBHandler db = new DBHandler(this);
-        users = new ArrayList<>();
-        users = db.getUsers();
-        Random rand = new Random();
-        int upperbound = 900000;
-        if (users.size() == 0){
-            for(int i = 0; i < 20; i++){
-                User u = (new User("Name" + rand.nextInt(upperbound)
-                        ,"Description " + rand.nextInt(upperbound)
-                        , i
-                        , rand.nextBoolean()
-                ));
-                users.add(u);
-                db.addUser(u);
-            }
-        }
-        users = db.getUsers();
+        DbHandler dbHandler = new DbHandler(this, "userDB.db", null, 1);
+        dbHandler.addUsers();
 
-        SharedPreferences pref = getSharedPreferences("P03",MODE_MULTI_PROCESS);
-        String text = pref.getString("Key","Not found");
+        ArrayList<User> Userlist = new ArrayList<>();
+        Userlist = dbHandler.getUser();
 
-        SharedPreferences.Editor editor =
-                pref.edit();
+        RecyclerView recyclerView = findViewById(R.id.Listrv);
+        UsersAdapter usersAdapter = new UsersAdapter(ListActivity.this, Userlist, dbHandler);
 
-        
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
 
-
-
-        RecyclerView rv = findViewById(R.id.Listrv);
-        UsersAdapter adapter = new UsersAdapter(users);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-
-        rv.setLayoutManager(layoutManager);
-        rv.setAdapter(adapter);
-
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setAdapter(usersAdapter);
 
     }
 }

@@ -19,11 +19,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UsersAdapter extends RecyclerView.Adapter<UserViewHolder> {
+
     ArrayList<User> users;
     Context c;
+    DbHandler db;
+
     public UsersAdapter(Context context, ArrayList<User> user) {
         c = context;
         user = users;
+    }
+    public UsersAdapter(Context c, ArrayList<User> data, DbHandler dbHandler) {
+        this.c = c;
+        this.users = data;
+        this.db = dbHandler;
     }
 
     public UsersAdapter(ArrayList<User> users) {this.users = users;}
@@ -71,10 +79,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UserViewHolder> {
                             public void onClick(DialogInterface dialog, int which) {
                                 Intent to_profile = new Intent(v.getContext(),MainActivity.class);
 //                                to_profile.putExtra("msg",)
-                                to_profile.putExtra("name",s.Name);
-                                to_profile.putExtra("desc",s.Description);
-                                to_profile.putExtra("pos",s.Followed);
-//                                to_profile.putExtra("full",(Serializable) s);
+                                User userFromDatabase = db.updateUserOnClick(s.Name);
+                                to_profile.putExtra("Obj", userFromDatabase);
                                 v.getContext().startActivity(to_profile);
                             }
                         });
